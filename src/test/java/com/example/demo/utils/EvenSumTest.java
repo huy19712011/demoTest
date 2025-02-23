@@ -9,7 +9,7 @@ class EvenSumTest {
     // Test 1: Biên nhỏ nhất (Minimum Boundary)
     @Test
     public void testFirstEvenNumber() {
-        assertEquals(0, EvenSum.calculateEvenSum(2));
+        assertEquals(2, EvenSum.calculateEvenSum(2));
     }
 
     // Test 2: Biên lớn nhất (Maximum Boundary)
