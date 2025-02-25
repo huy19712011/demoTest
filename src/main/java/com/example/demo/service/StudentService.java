@@ -4,6 +4,7 @@ import com.example.demo.entity.Student;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class StudentService {
 
@@ -29,6 +30,12 @@ public class StudentService {
         return null;
     }
 
+    public Optional<Student> getStudentByIdV2(long id) {
+        return students.stream()
+                .filter(student -> student.getId() == id)
+                .findFirst();
+    }
+
     public void updateStudent(Student student) {
 
         if (student == null) {
@@ -40,8 +47,25 @@ public class StudentService {
                 students.set(i, student);
                 return;
             }
+            else {
+                throw new IllegalArgumentException("Student with id " + student.getId() + " does not exist");
+            }
         }
     }
+
+    public void updateStudentV2(Student student) {
+        if (student == null) {
+            throw new IllegalArgumentException("Student can not be null");
+        }
+
+        Optional<Student> existingStudent = getStudentByIdV2(student.getId());
+        if (existingStudent.isPresent()) {
+            students.set(students.indexOf(existingStudent.get()), student);
+        } else {
+            throw new IllegalArgumentException("Student with id " + student.getId() + " does not exist");
+        }
+    }
+
 
     public boolean deleteStudent(long id) {
 
@@ -55,7 +79,12 @@ public class StudentService {
         return false;
     }
 
+    public boolean deleteStudentV2(long id) {
+        return students.removeIf(student -> student.getId() == id);
+    }
+
     public List<Student> getAllStudents() {
-        return students;
+
+        return new ArrayList<>(students);
     }
 }

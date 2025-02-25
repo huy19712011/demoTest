@@ -4,6 +4,8 @@ import com.example.demo.entity.Student;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -22,7 +24,6 @@ class StudentServiceTest {
         Student student = new Student(1, "Alice", 20, 9.0);
         studentService.addStudent(student);
         assertEquals(1, studentService.getAllStudents().size());
-        System.out.println(student);
     }
 
     @Test
@@ -56,6 +57,8 @@ class StudentServiceTest {
         Student student = new Student(1, "Alice", 20, 9.0);
         studentService.addStudent(student);
         assertEquals(student, studentService.getStudentById(1));
+
+        assertEquals(Optional.of(student), studentService.getStudentByIdV2(1));
     }
 
     @Test
@@ -63,6 +66,8 @@ class StudentServiceTest {
         Student student = new Student(1, "Alice", 20, 9.0);
         studentService.addStudent(student);
         assertNull(studentService.getStudentById(2));
+
+        assertEquals(Optional.empty(), studentService.getStudentByIdV2(2));
     }
 
 
@@ -77,12 +82,29 @@ class StudentServiceTest {
         assertEquals("Bob", studentService.getStudentById(1).getName());
         assertEquals(21, studentService.getStudentById(1).getAge());
         assertEquals(8.0, studentService.getStudentById(1).getMark());
+
+        assertEquals("Bob", studentService.getStudentByIdV2(1).get().getName());
+        assertEquals(21, studentService.getStudentByIdV2(1).get().getAge());
+        assertEquals(8.0, studentService.getStudentByIdV2(1).get().getMark());
     }
 
     @Test
     void updateStudentWithNull() {
         Exception exception = assertThrows(IllegalArgumentException.class, () -> studentService.updateStudent(null));
         assertEquals("Student can not be null", exception.getMessage());
+    }
+
+    @Test
+    void updateStudentWithInvalidId() {
+        Student student = new Student(1, "Alice", 20, 9.0);
+        studentService.addStudent(student);
+        Exception exception = assertThrows(IllegalArgumentException.class,
+                () -> studentService.updateStudent(new Student(2, "Bob", 21, 8.0)));
+        assertEquals("Student with id 2 does not exist", exception.getMessage());
+
+        Exception exceptionV2 = assertThrows(IllegalArgumentException.class,
+                () -> studentService.updateStudentV2(new Student(2, "Bob", 21, 8.0)));
+        assertEquals("Student with id 2 does not exist", exceptionV2.getMessage());
     }
 
     @Test
@@ -129,3 +151,4 @@ class StudentServiceTest {
         assertEquals(2, studentService.getAllStudents().size());
     }
 }
+
